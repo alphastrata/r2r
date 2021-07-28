@@ -1,0 +1,144 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Initialize a rcl_action_client_t. **"><meta name="keywords" content="rust, rustlang, rust-lang, rcl_action_client_init"><title>actions::rcl_action_client_init - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings"></script><script src="../storage.js"></script><script src="../crates.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../actions/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class="location"><a href="index.html">actions</a></p><div id="sidebar-vars" data-name="rcl_action_client_init" data-ty="fn" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Function <a href="index.html">actions</a>::<wbr><a class="fn" href="">rcl_action_client_init</a></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/actions/Users/martin/r2r/r2r/target/debug/build/actions-08b31eb10feca840/out/action_bindings.rs.html#511-517" title="goto source code">[src]</a></span></h1><pre class="rust fn">pub unsafe extern &quot;C&quot; fn rcl_action_client_init(<br>&nbsp;&nbsp;&nbsp;&nbsp;action_client: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../actions/struct.rcl_action_client_t.html" title="struct actions::rcl_action_client_t">rcl_action_client_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;node: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../rcl/struct.rcl_node_t.html" title="struct rcl::rcl_node_t">rcl_node_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;type_support: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*const </a><a class="struct" href="../rcl/struct.rosidl_action_type_support_t.html" title="struct rcl::rosidl_action_type_support_t">rosidl_action_type_support_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;action_name: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*const </a><a class="type" href="https://doc.rust-lang.org/nightly/std/os/raw/type.c_char.html" title="type std::os::raw::c_char">c_char</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;options: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*const </a><a class="struct" href="../actions/struct.rcl_action_client_options_t.html" title="struct actions::rcl_action_client_options_t">rcl_action_client_options_t</a><br>) -&gt; <a class="type" href="../rcl/type.rcl_ret_t.html" title="type rcl::rcl_ret_t">rcl_ret_t</a></pre><div class="docblock"><p>Initialize a rcl_action_client_t.
+**</p>
+<ul>
+<li>After calling this function on a rcl_action_client_t, it can be used to send</li>
+<li>goals of the given type to the given topic using rcl_action_send_goal_request().</li>
+<li>If a goal request is sent to a (possibly remote) server and if the server</li>
+<li>sends a response, the client can access the response with</li>
+<li>rcl_take_goal_response() once the response is available.</li>
+<li></li>
+<li>After a goal request has been accepted, the rcl_action_client_t associated with the</li>
+<li>goal can perform the following operations:</li>
+<li></li>
+<li>
+<ul>
+<li>Send a request for the result with rcl_action_send_result_request().</li>
+</ul>
+</li>
+<li>If the server sends a response when the goal terminates, the result can be accessed</li>
+<li>with rcl_action_take_result_response(), once the response is available.</li>
+<li>
+<ul>
+<li>Send a cancel request for the goal with rcl_action_send_cancel_request().</li>
+</ul>
+</li>
+<li>If the server sends a response to a cancel request, the client can access the</li>
+<li>response with rcl_action_take_cancel_response() once the response is available.</li>
+<li>
+<ul>
+<li>Take feedback about the goal with rcl_action_take_feedback().</li>
+</ul>
+</li>
+<li></li>
+<li>A rcl_action_client_t can be used to access the current status of all accepted goals</li>
+<li>communicated by the action server with rcl_action_take_status().</li>
+<li></li>
+<li>The given rcl_node_t must be valid and the resulting rcl_action_client_t is</li>
+<li>only valid as long as the given rcl_node_t remains valid.</li>
+<li></li>
+<li>The rosidl_action_type_support_t is obtained on a per .action type basis.</li>
+<li>When the user defines a ROS action, code is generated which provides the</li>
+<li>required rosidl_action_type_support_t object.</li>
+<li>This object can be obtained using a language appropriate mechanism.</li>
+<li></li>
+<li>\todo TODO(jacobperron) write these instructions once and link to it instead</li>
+<li></li>
+<li>For C, a macro can be used (for example <code>example_interfaces/Fibonacci</code>):</li>
+<li></li>
+<li>
+<pre><code class="language-c"></code></pre>
+</li>
+<li>#include &lt;rosidl_runtime_c/action_type_support_struct.h&gt;</li>
+<li>#include &lt;example_interfaces/action/fibonacci.h&gt;</li>
+<li>const rosidl_action_type_support_t * ts =</li>
+<li>ROSIDL_GET_ACTION_TYPE_SUPPORT(example_interfaces, Fibonacci);</li>
+<li>
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+</pre></div>
+</li>
+<li></li>
+<li>For C++, a template function is used:</li>
+<li></li>
+<li>
+<pre><code class="language-cpp"></code></pre>
+</li>
+<li>#include &lt;rosidl_runtime_cpp/action_type_support.hpp&gt;</li>
+<li>#include &lt;example_interfaces/action/fibonacci.h&gt;</li>
+<li>using rosidl_typesupport_cpp::get_action_type_support_handle;</li>
+<li>const rosidl_action_type_support_t * ts =</li>
+<li>get_action_type_support_handle&lt;example_interfaces::action::Fibonacci&gt;();</li>
+<li>
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+</pre></div>
+</li>
+<li></li>
+<li>The rosidl_action_type_support_t object contains action type specific</li>
+<li>information used to send or take goals, results, and feedback.</li>
+<li></li>
+<li>The topic name must be a c string that follows the topic and service name</li>
+<li>format rules for unexpanded names, also known as non-fully qualified names:</li>
+<li></li>
+<li>\see rcl_expand_topic_name</li>
+<li></li>
+<li>The options struct allows the user to set the quality of service settings as</li>
+<li>well as a custom allocator that is used when initializing/finalizing the</li>
+<li>client to allocate space for incidentals, e.g. the action client name string.</li>
+<li></li>
+<li>Expected usage (for C action clients):</li>
+<li></li>
+<li>
+<pre><code class="language-c"></code></pre>
+</li>
+<li>#include &lt;rcl/rcl.h&gt;</li>
+<li>#include &lt;rcl_action/action_client.h&gt;</li>
+<li>#include &lt;rosidl_runtime_c/action_type_support_struct.h&gt;</li>
+<li>#include &lt;example_interfaces/action/fibonacci.h&gt;</li>
+<li></li>
+<li>rcl_node_t node = rcl_get_zero_initialized_node();</li>
+<li>rcl_node_options_t node_ops = rcl_node_get_default_options();</li>
+<li>rcl_ret_t ret = rcl_node_init(&amp;node, “node_name”, “/my_namespace”, &amp;node_ops);</li>
+<li>// … error handling</li>
+<li>const rosidl_action_type_support_t * ts =</li>
+<li>ROSIDL_GET_ACTION_TYPE_SUPPORT(example_interfaces, Fibonacci);</li>
+<li>rcl_action_client_t action_client = rcl_action_get_zero_initialized_client();</li>
+<li>rcl_action_client_options_t action_client_ops = rcl_action_client_get_default_options();</li>
+<li>ret = rcl_action_client_init(&amp;action_client, &amp;node, ts, “fibonacci”, &amp;action_client_ops);</li>
+<li>// … error handling, and on shutdown do finalization:</li>
+<li>ret = rcl_action_client_fini(&amp;action_client, &amp;node);</li>
+<li>// … error handling for rcl_action_client_fini()</li>
+<li>ret = rcl_node_fini(&amp;node);</li>
+<li>// … error handling for rcl_node_fini()</li>
+<li>
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+</pre></div>
+</li>
+<li></li>
+<li><hr>
+</li>
+<li>Attribute          | Adherence</li>
+<li>—————— | ———––</li>
+<li>Allocates Memory   | Yes</li>
+<li>Thread-Safe        | No</li>
+<li>Uses Atomics       | No</li>
+<li>Lock-Free          | Yes</li>
+<li></li>
+<li>\param[out] action_client a preallocated, zero-initialized action client structure</li>
+<li>to be initialized</li>
+<li>\param[in] node valid rcl node handle</li>
+<li>\param[in] type_support type support object for the action’s type</li>
+<li>\param[in] action_name the name of the action</li>
+<li>\param[in] options action_client options, including quality of service settings</li>
+<li>\return <code>RCL_RET_OK</code> if action_client was initialized successfully, or</li>
+<li>\return <code>RCL_RET_INVALID_ARGUMENT</code> if any arguments are invalid, or</li>
+<li>\return <code>RCL_RET_NODE_INVALID</code> if the node is invalid, or</li>
+<li>\return <code>RCL_RET_ALREADY_INIT</code> if the action client is already initialized, or</li>
+<li>\return <code>RCL_RET_BAD_ALLOC</code> if allocating memory failed, or</li>
+<li>\return <code>RCL_RET_ACTION_NAME_INVALID</code> if the given action name is invalid, or</li>
+<li>\return <code>RCL_RET_ERROR</code> if an unspecified error occurs.
+*/</li>
+</ul>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="actions" data-search-js="../search-index.js"></div>
+    <script src="../main.js"></script></body></html>

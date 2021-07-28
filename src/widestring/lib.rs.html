@@ -1,0 +1,483 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/Users/martin/.cargo/registry/src/github.com-1ecc6299db9ec823/widestring-0.4.3/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings"></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../widestring/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="doccomment">//! A wide string FFI module for converting to and from wide string variants.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! This module provides multiple types of wide strings: `U16String`, `U16CString`, `U32String`,</span>
+<span class="doccomment">//! and `U32CString`. These types are backed by two generic implementations parameterized by</span>
+<span class="doccomment">//! element size: `UString&lt;C&gt;` and `UCString&lt;C&gt;`. The `UCString` types are analogous to the</span>
+<span class="doccomment">//! standard `CString` FFI type, while the `UString` types are analogous to `OsString`. Otherwise,</span>
+<span class="doccomment">//! `U16` and `U32` types differ only in character width and encoding methods.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! For `U16String` and `U32String`, no guarantees are made about the underlying string data; they</span>
+<span class="doccomment">//! are simply a sequence of UTF-16 *code units* or UTF-32 code points, both of which may be</span>
+<span class="doccomment">//! ill-formed or contain nul values. `U16CString` and `U32CString`, on the other hand, are aware</span>
+<span class="doccomment">//! of nul values and are guaranteed to be terminated with a nul value (unless unchecked methods</span>
+<span class="doccomment">//! are used to construct the strings). Because `U16CString` and `U32CString` are C-style,</span>
+<span class="doccomment">//! nul-terminated strings, they will have no interior nul values. All four string types may still</span>
+<span class="doccomment">//! have unpaired UTF-16 surrogates or invalid UTF-32 code points; ill-formed data is preserved</span>
+<span class="doccomment">//! until conversion to a basic Rust `String`.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Use `U16String` or `U32String` when you simply need to pass-through strings, or when you know</span>
+<span class="doccomment">//! or don&#39;t care if you&#39;re not dealing with a nul-terminated string, such as when string lengths</span>
+<span class="doccomment">//! are provided and you are only reading strings from FFI, not writing them out to a FFI.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Use `U16CString` or `U32CString` when you must properly handle nul values, and must deal with</span>
+<span class="doccomment">//! nul-terminated C-style wide strings, such as when you pass strings into FFI functions.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Relationship to other Rust Strings</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Standard Rust strings `String` and `str` are well-formed Unicode data encoded as UTF-8. The</span>
+<span class="doccomment">//! standard strings provide proper handling of Unicode and ensure strong safety guarantees.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! `CString` and `CStr` are strings used for C FFI. They handle nul-terminated C-style strings.</span>
+<span class="doccomment">//! However, they do not have a builtin encoding, and conversions between C-style and other Rust</span>
+<span class="doccomment">//! strings must specifically encode and decode the strings, and handle possibly invalid encoding</span>
+<span class="doccomment">//! data. They are safe to use only in passing string-like data back and forth from C APIs but do</span>
+<span class="doccomment">//! not provide any other guarantees, so may not be well-formed.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! `OsString` and `OsStr` are also strings for use with FFI. Unlike `CString`, they do no special</span>
+<span class="doccomment">//! handling of nul values, but instead have an OS-specified encoding. While, for example, on Linux</span>
+<span class="doccomment">//! systems this is usually the UTF-8 encoding, this is not the case for every platform. The</span>
+<span class="doccomment">//! encoding may not even be 8-bit: on Windows, `OsString` uses a malformed encoding sometimes</span>
+<span class="doccomment">//! referred to as &quot;WTF-8&quot;. In any case, like `CString`, `OsString` has no additional guarantees</span>
+<span class="doccomment">//! and may not be well-formed.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Due to the loss of safety of these other string types, conversion to standard Rust `String` is</span>
+<span class="doccomment">//! lossy, and may require knowledge of the underlying encoding, including platform-specific</span>
+<span class="doccomment">//! quirks.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! The wide strings in this crate are roughly based on the principles of the string types in</span>
+<span class="doccomment">//! `std::ffi`, though there are differences. `U16String`, `U32String`, `U16Str`, and `U32Str` are</span>
+<span class="doccomment">//! roughly similar in role to `OsString` and `OsStr`, while `U16CString`, `U32CString`, `U16CStr`,</span>
+<span class="doccomment">//! and `U32CStr` are roughly similar in role to `CString` and `CStr`. Conversion to FFI string</span>
+<span class="doccomment">//! types is generally very straight forward and safe, while conversion directly between standard</span>
+<span class="doccomment">//! Rust `String` is a lossy conversion just as `OsString` is.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! `U16String` and `U16CString` are treated as though they use UTF-16 encoding, even if they may</span>
+<span class="doccomment">//! contain unpaired surrogates. `U32String` and `U32CString` are treated as though they use UTF-32</span>
+<span class="doccomment">//! encoding, even if they may contain values outside the valid Unicode character range.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Remarks on UTF-16 Code Units</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! *Code units* are the 16-bit units that comprise UTF-16 sequences. Code units</span>
+<span class="doccomment">//! can specify Unicode code points either as single units or in *surrogate pairs*. Because every</span>
+<span class="doccomment">//! code unit might be part of a surrogate pair, many regular string operations, including</span>
+<span class="doccomment">//! indexing into a wide string, writing to a wide string, or even iterating a wide string should</span>
+<span class="doccomment">//! be handled with care and are greatly discouraged. Some operations have safer alternatives</span>
+<span class="doccomment">//! provided, such as Unicode code point iteration instead of code unit iteration. Always keep in</span>
+<span class="doccomment">//! mind that the number of code units (`len()`) of a wide string is **not** equivalent to the</span>
+<span class="doccomment">//! number of Unicode characters in the string, merely the length of the UTF-16 encoding sequence.</span>
+<span class="doccomment">//! In fact, Unicode code points do not even have a one-to-one mapping with characters!</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! UTF-32 simply encodes Unicode code points as-is in 32-bit values, but Unicode character code</span>
+<span class="doccomment">//! points are reserved only for 21-bits. Again, Unicode code points do not have a one-to-one</span>
+<span class="doccomment">//! mapping with the concept of a visual character glyph.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # FFI with C/C++ `wchar_t`</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! C/C++&#39;s `wchar_t` (and C++&#39;s corresponding `widestring`) varies in size depending on compiler</span>
+<span class="doccomment">//! and platform. Typically, `wchar_t` is 16-bits on Windows and 32-bits on most Unix-based</span>
+<span class="doccomment">//! platforms. For convenience when using `wchar_t`-based FFI&#39;s, type aliases for the corresponding</span>
+<span class="doccomment">//! string types are provided: `WideString` aliases `U16String` on Windows or `U32String`</span>
+<span class="doccomment">//! elsewhere, `WideCString` aliases `U16CString` or `U32CString`, etc. The `WideChar` alias</span>
+<span class="doccomment">//! is also provided, aliasing `u16` or `u32`.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! When not interacting with a FFI using `wchar_t`, it is recommended to use the string types</span>
+<span class="doccomment">//! directly rather than via the wide alias.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! This crate supports `no_std` when default features are disabled. The `std` and `alloc` features</span>
+<span class="doccomment">//! (enabled by default) enable the `U16String`, `U32String`, `U16CString`, and `U32CString` types</span>
+<span class="doccomment">//! and aliases. Other types do not require allocation and can be used in a `no_std` environment.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Examples</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! The following example uses `U16String` to get Windows error messages, since `FormatMessageW`</span>
+<span class="doccomment">//! returns a string length for us and we don&#39;t need to pass error messages into other FFI</span>
+<span class="doccomment">//! functions so we don&#39;t need to worry about nul values.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ```rust</span>
+<span class="doccomment">//! # #[cfg(not(windows))]</span>
+<span class="doccomment">//! # fn main() {}</span>
+<span class="doccomment">//! # extern crate winapi;</span>
+<span class="doccomment">//! # extern crate widestring;</span>
+<span class="doccomment">//! # #[cfg(windows)]</span>
+<span class="doccomment">//! # fn main() {</span>
+<span class="doccomment">//! use winapi::um::winbase::{FormatMessageW, LocalFree, FORMAT_MESSAGE_FROM_SYSTEM,</span>
+<span class="doccomment">//!                           FORMAT_MESSAGE_ALLOCATE_BUFFER, FORMAT_MESSAGE_IGNORE_INSERTS};</span>
+<span class="doccomment">//! use winapi::shared::ntdef::LPWSTR;</span>
+<span class="doccomment">//! use winapi::shared::minwindef::HLOCAL;</span>
+<span class="doccomment">//! use std::ptr;</span>
+<span class="doccomment">//! use widestring::U16String;</span>
+<span class="doccomment">//! # use winapi::shared::minwindef::DWORD;</span>
+<span class="doccomment">//! # let error_code: DWORD = 0;</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! let U16Str: U16String;</span>
+<span class="doccomment">//! unsafe {</span>
+<span class="doccomment">//!     // First, get a string buffer from some windows api such as FormatMessageW...</span>
+<span class="doccomment">//!     let mut buffer: LPWSTR = ptr::null_mut();</span>
+<span class="doccomment">//!     let strlen = FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |</span>
+<span class="doccomment">//!                                 FORMAT_MESSAGE_ALLOCATE_BUFFER |</span>
+<span class="doccomment">//!                                 FORMAT_MESSAGE_IGNORE_INSERTS,</span>
+<span class="doccomment">//!                                 ptr::null(),</span>
+<span class="doccomment">//!                                 error_code, // error code from GetLastError()</span>
+<span class="doccomment">//!                                 0,</span>
+<span class="doccomment">//!                                 (&amp;mut buffer as *mut LPWSTR) as LPWSTR,</span>
+<span class="doccomment">//!                                 0,</span>
+<span class="doccomment">//!                                 ptr::null_mut());</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!     // Get the buffer as a wide string</span>
+<span class="doccomment">//!     U16Str = U16String::from_ptr(buffer, strlen as usize);</span>
+<span class="doccomment">//!     // Since U16String creates an owned copy, it&#39;s safe to free original buffer now</span>
+<span class="doccomment">//!     // If you didn&#39;t want an owned copy, you could use &amp;U16Str.</span>
+<span class="doccomment">//!     LocalFree(buffer as HLOCAL);</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//! // Convert to a regular Rust String and use it to your heart&#39;s desire!</span>
+<span class="doccomment">//! let message = U16Str.to_string_lossy();</span>
+<span class="doccomment">//! # assert_eq!(message, &quot;The operation completed successfully.\r\n&quot;);</span>
+<span class="doccomment">//! # }</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! The following example is the functionally the same, only using `U16CString` instead.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ```rust</span>
+<span class="doccomment">//! # #[cfg(not(windows))]</span>
+<span class="doccomment">//! # fn main() {}</span>
+<span class="doccomment">//! # extern crate winapi;</span>
+<span class="doccomment">//! # extern crate widestring;</span>
+<span class="doccomment">//! # #[cfg(windows)]</span>
+<span class="doccomment">//! # fn main() {</span>
+<span class="doccomment">//! use winapi::um::winbase::{FormatMessageW, LocalFree, FORMAT_MESSAGE_FROM_SYSTEM,</span>
+<span class="doccomment">//!                           FORMAT_MESSAGE_ALLOCATE_BUFFER, FORMAT_MESSAGE_IGNORE_INSERTS};</span>
+<span class="doccomment">//! use winapi::shared::ntdef::LPWSTR;</span>
+<span class="doccomment">//! use winapi::shared::minwindef::HLOCAL;</span>
+<span class="doccomment">//! use std::ptr;</span>
+<span class="doccomment">//! use widestring::U16CString;</span>
+<span class="doccomment">//! # use winapi::shared::minwindef::DWORD;</span>
+<span class="doccomment">//! # let error_code: DWORD = 0;</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! let U16Str: U16CString;</span>
+<span class="doccomment">//! unsafe {</span>
+<span class="doccomment">//!     // First, get a string buffer from some windows api such as FormatMessageW...</span>
+<span class="doccomment">//!     let mut buffer: LPWSTR = ptr::null_mut();</span>
+<span class="doccomment">//!     FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |</span>
+<span class="doccomment">//!                    FORMAT_MESSAGE_ALLOCATE_BUFFER |</span>
+<span class="doccomment">//!                    FORMAT_MESSAGE_IGNORE_INSERTS,</span>
+<span class="doccomment">//!                    ptr::null(),</span>
+<span class="doccomment">//!                    error_code, // error code from GetLastError()</span>
+<span class="doccomment">//!                    0,</span>
+<span class="doccomment">//!                    (&amp;mut buffer as *mut LPWSTR) as LPWSTR,</span>
+<span class="doccomment">//!                    0,</span>
+<span class="doccomment">//!                    ptr::null_mut());</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!     // Get the buffer as a wide string</span>
+<span class="doccomment">//!     U16Str = U16CString::from_ptr_str(buffer);</span>
+<span class="doccomment">//!     // Since U16CString creates an owned copy, it&#39;s safe to free original buffer now</span>
+<span class="doccomment">//!     // If you didn&#39;t want an owned copy, you could use &amp;U16CStr.</span>
+<span class="doccomment">//!     LocalFree(buffer as HLOCAL);</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//! // Convert to a regular Rust String and use it to your heart&#39;s desire!</span>
+<span class="doccomment">//! let message = U16Str.to_string_lossy();</span>
+<span class="doccomment">//! # assert_eq!(message, &quot;The operation completed successfully.\r\n&quot;);</span>
+<span class="doccomment">//! # }</span>
+<span class="doccomment">//! ```</span>
+
+<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">future_incompatible</span>)]</span>
+<span class="attribute">#![<span class="ident">warn</span>(
+    <span class="ident">unused</span>,
+    <span class="ident">anonymous_parameters</span>,
+    <span class="ident">missing_docs</span>,
+    <span class="ident">missing_copy_implementations</span>,
+    <span class="ident">missing_debug_implementations</span>,
+    <span class="ident">trivial_casts</span>,
+    <span class="ident">trivial_numeric_casts</span>
+)]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;alloc&quot;</span>, <span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)))]</span>
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">alloc</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">core</span>;
+
+<span class="kw">use</span> <span class="ident">core</span>::<span class="ident">fmt</span>::<span class="ident">Debug</span>;
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
+<span class="kw">mod</span> <span class="ident">platform</span>;
+<span class="kw">mod</span> <span class="ident">ucstr</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;alloc&quot;</span>)]</span>
+<span class="kw">mod</span> <span class="ident">ucstring</span>;
+<span class="kw">mod</span> <span class="ident">ustr</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;alloc&quot;</span>)]</span>
+<span class="kw">mod</span> <span class="ident">ustring</span>;
+
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ucstr</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;alloc&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ucstring</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ustr</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;alloc&quot;</span>)]</span>
+<span class="kw">pub</span> <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">ustring</span>::<span class="kw-2">*</span>;
+
+<span class="doccomment">/// Marker trait for primitive types used to represent UTF character data. Should not be used</span>
+<span class="doccomment">/// directly.</span>
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">UChar</span>: <span class="ident">Debug</span> <span class="op">+</span> <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Eq</span> {
+    <span class="doccomment">/// NUL character value</span>
+    <span class="kw">const</span> <span class="ident">NUL</span>: <span class="self">Self</span>;
+}
+
+<span class="kw">impl</span> <span class="ident">UChar</span> <span class="kw">for</span> <span class="ident">u16</span> {
+    <span class="kw">const</span> <span class="ident">NUL</span>: <span class="ident">u16</span> <span class="op">=</span> <span class="number">0</span>;
+}
+
+<span class="kw">impl</span> <span class="ident">UChar</span> <span class="kw">for</span> <span class="ident">u32</span> {
+    <span class="kw">const</span> <span class="ident">NUL</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+}
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">windows</span>))]</span>
+<span class="doccomment">/// Alias for `u16` or `u32` depending on platform. Intended to match typical C `wchar_t` size on platform.</span>
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">WideChar</span> <span class="op">=</span> <span class="ident">u32</span>;
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
+<span class="doccomment">/// Alias for `u16` or `u32` depending on platform. Intended to match typical C `wchar_t` size on platform.</span>
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">WideChar</span> <span class="op">=</span> <span class="ident">u16</span>;
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="widestring" data-search-js="../../search-index.js"></div>
+    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script></body></html>

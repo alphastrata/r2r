@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["GetMapROI",""],["GetPointMap",""],["GetPointMapROI",""],["ProjectedMapsInfo",""],["SaveMap",""],["SetMapProjections",""]]});

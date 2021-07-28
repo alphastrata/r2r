@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["GetResult",""],["SendGoal",""]],"struct":[["Action",""],["Feedback",""],["FeedbackMessage",""],["Goal",""],["Result",""]]});

@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Expires goals associated with an action server. **"><meta name="keywords" content="rust, rustlang, rust-lang, rcl_action_expire_goals"><title>actions::rcl_action_expire_goals - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings"></script><script src="../storage.js"></script><script src="../crates.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../actions/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class="location"><a href="index.html">actions</a></p><div id="sidebar-vars" data-name="rcl_action_expire_goals" data-ty="fn" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Function <a href="index.html">actions</a>::<wbr><a class="fn" href="">rcl_action_expire_goals</a></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/actions/Users/martin/r2r/r2r/target/debug/build/actions-08b31eb10feca840/out/action_bindings.rs.html#2001-2006" title="goto source code">[src]</a></span></h1><pre class="rust fn">pub unsafe extern &quot;C&quot; fn rcl_action_expire_goals(<br>&nbsp;&nbsp;&nbsp;&nbsp;action_server: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*const </a><a class="struct" href="../actions/struct.rcl_action_server_t.html" title="struct actions::rcl_action_server_t">rcl_action_server_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;expired_goals: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="type" href="../actions/type.rcl_action_goal_info_t.html" title="type actions::rcl_action_goal_info_t">rcl_action_goal_info_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;expired_goals_capacity: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;num_expired: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a><br>) -&gt; <a class="type" href="../rcl/type.rcl_ret_t.html" title="type rcl::rcl_ret_t">rcl_ret_t</a></pre><div class="docblock"><p>Expires goals associated with an action server.
+**</p>
+<ul>
+<li>A goal is ‘expired’ if it has been in a terminal state (has a result) for longer</li>
+<li>than some duration.</li>
+<li>The timeout duration is set as part of the action server options.</li>
+<li></li>
+<li>If a negative timeout value if provided, then goal results never expire (kept forever).</li>
+<li>If a timeout of zero is set, then goal results are discarded immediately (ie. goal</li>
+<li>results are discarded whenever this function is called).</li>
+<li></li>
+<li>Expired goals are removed from the internal array of goal handles.</li>
+<li>rcl_action_server_goal_exists() will return false for any goals that have expired.</li>
+<li></li>
+<li>\attention If one or more goals are expired then a previously returned goal handle</li>
+<li>array from rcl_action_server_get_goal_handles() becomes invalid.</li>
+<li></li>
+<li><code>expired_goals</code>, <code>expired_goals_capacity</code> and <code>num_expired</code> are optional arguments.</li>
+<li>If set to (<code>NULL</code>, 0u, <code>NULL</code>) then they are not used.</li>
+<li>To use them allocate an array with size equal to the maximum number of goals that you want to</li>
+<li>expire.</li>
+<li>Pass the number of goals the array can hold in as <code>expired_goals_capacity</code>.</li>
+<li>This function will set <code>num_expired</code> to the number of goals that were expired.</li>
+<li></li>
+<li><hr>
+</li>
+<li>Attribute          | Adherence</li>
+<li>—————— | ———––</li>
+<li>Allocates Memory   | Maybe[1]</li>
+<li>Thread-Safe        | No</li>
+<li>Uses Atomics       | No</li>
+<li>Lock-Free          | Yes</li>
+<li><i>[1] if one or more goals expires, then the internal goal handle array may be</li>
+<li>resized or deallocated</i></li>
+<li></li>
+<li>\param[in] action_server handle to the action server from which expired goals</li>
+<li>will be cleared.</li>
+<li>\param[inout] expired_goals the identifiers of goals that expired, or set to <code>NULL</code> if unused</li>
+<li>\param[inout] expired_goals_capacity the allocated size of <code>expired_goals</code>, or 0 if unused</li>
+<li>\param[out] num_expired the number of expired goals, or set to <code>NULL</code> if unused</li>
+<li>\return <code>RCL_RET_OK</code> if the response was sent successfully, or</li>
+<li>\return <code>RCL_RET_ACTION_SERVER_INVALID</code> if the action server is invalid, or</li>
+<li>\return <code>RCL_RET_INVALID_ARGUMENT</code> if any arguments are invalid, or</li>
+<li>\return <code>RCL_RET_BAD_ALLOC</code> if allocating memory failed, or</li>
+<li>\return <code>RCL_RET_ERROR</code> if an unspecified error occurs.
+*/</li>
+</ul>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="actions" data-search-js="../search-index.js"></div>
+    <script src="../main.js"></script></body></html>

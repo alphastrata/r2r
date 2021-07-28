@@ -1,0 +1,39 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Get the goal handles for all goals an action server is tracking. **"><meta name="keywords" content="rust, rustlang, rust-lang, rcl_action_server_get_goal_handles"><title>actions::rcl_action_server_get_goal_handles - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings"></script><script src="../storage.js"></script><script src="../crates.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../actions/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class="location"><a href="index.html">actions</a></p><div id="sidebar-vars" data-name="rcl_action_server_get_goal_handles" data-ty="fn" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Function <a href="index.html">actions</a>::<wbr><a class="fn" href="">rcl_action_server_get_goal_handles</a></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/actions/Users/martin/r2r/r2r/target/debug/build/actions-08b31eb10feca840/out/action_bindings.rs.html#2226-2230" title="goto source code">[src]</a></span></h1><pre class="rust fn">pub unsafe extern &quot;C&quot; fn rcl_action_server_get_goal_handles(<br>&nbsp;&nbsp;&nbsp;&nbsp;action_server: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*const </a><a class="struct" href="../actions/struct.rcl_action_server_t.html" title="struct actions::rcl_action_server_t">rcl_action_server_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;goal_handles: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../actions/struct.rcl_action_goal_handle_t.html" title="struct actions::rcl_action_goal_handle_t">rcl_action_goal_handle_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;num_goals: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a><br>) -&gt; <a class="type" href="../rcl/type.rcl_ret_t.html" title="type rcl::rcl_ret_t">rcl_ret_t</a></pre><div class="docblock"><p>Get the goal handles for all goals an action server is tracking.
+**</p>
+<ul>
+<li>A pointer to the internally held array of pointers to goal handle structs is returned</li>
+<li>along with the number of items in the array.</li>
+<li></li>
+<li>The returned handle is made invalid if the action server is finalized, if</li>
+<li>rcl_shutdown() is called, or if rcl_action_expire_goals() is called and one or more</li>
+<li>goals are expired.</li>
+<li>The returned handle is not guaranteed to be valid for the life time of the</li>
+<li>action server as it may be finalized and recreated itself.</li>
+<li>Therefore, it is recommended to get the handle from the action server using</li>
+<li>this function each time it is needed and avoid use of the handle</li>
+<li>concurrently with functions that might change it.</li>
+<li></li>
+<li><hr>
+</li>
+<li>Attribute          | Adherence</li>
+<li>—————— | ———––</li>
+<li>Allocates Memory   | No</li>
+<li>Thread-Safe        | No</li>
+<li>Uses Atomics       | No</li>
+<li>Lock-Free          | Yes</li>
+<li></li>
+<li>\param[in] action_server handle to the action server</li>
+<li>\param[out] goal_handles is set to the array of pointers to goal handles if successful.</li>
+<li>\param[out] num_goals is set to the number of goals in the returned array if successful,</li>
+<li>not set otherwise.</li>
+<li>\return <code>RCL_RET_OK</code> if successful, or</li>
+<li>\return <code>RCL_RET_ACTION_SERVER_INVALID</code> if the action server is invalid, or</li>
+<li>\return <code>RCL_RET_INVALID_ARGUMENT</code> if any arguments are invalid, or</li>
+<li>\return <code>RCL_RET_ERROR</code> if an unspecified error occurs.
+*/</li>
+</ul>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="actions" data-search-js="../search-index.js"></div>
+    <script src="../main.js"></script></body></html>

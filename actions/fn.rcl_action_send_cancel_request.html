@@ -1,0 +1,60 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Send a cancel request for a goal using a rcl_action_client_t. **"><meta name="keywords" content="rust, rustlang, rust-lang, rcl_action_send_cancel_request"><title>actions::rcl_action_send_cancel_request - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings"></script><script src="../storage.js"></script><script src="../crates.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../actions/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class="location"><a href="index.html">actions</a></p><div id="sidebar-vars" data-name="rcl_action_send_cancel_request" data-ty="fn" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Function <a href="index.html">actions</a>::<wbr><a class="fn" href="">rcl_action_send_cancel_request</a></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/actions/Users/martin/r2r/r2r/target/debug/build/actions-08b31eb10feca840/out/action_bindings.rs.html#936-940" title="goto source code">[src]</a></span></h1><pre class="rust fn">pub unsafe extern &quot;C&quot; fn rcl_action_send_cancel_request(<br>&nbsp;&nbsp;&nbsp;&nbsp;action_client: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*const </a><a class="struct" href="../actions/struct.rcl_action_client_t.html" title="struct actions::rcl_action_client_t">rcl_action_client_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;ros_cancel_request: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*const </a><a class="enum" href="https://doc.rust-lang.org/nightly/core/ffi/enum.c_void.html" title="enum core::ffi::c_void">c_void</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;sequence_number: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a><br>) -&gt; <a class="type" href="../rcl/type.rcl_ret_t.html" title="type rcl::rcl_ret_t">rcl_ret_t</a></pre><div class="docblock"><p>Send a cancel request for a goal using a rcl_action_client_t.
+**</p>
+<ul>
+<li>This is a non-blocking call.</li>
+<li></li>
+<li>The caller is responsible for ensuring that the type of <code>ros_cancel_request</code></li>
+<li>and the type associate with the client (via the type support) match.</li>
+<li>Passing a different type produces undefined behavior and cannot be checked</li>
+<li>by this function and therefore no deliberate error will occur.</li>
+<li></li>
+<li>The following cancel policy applies based on the goal ID and the timestamp provided</li>
+<li>by the <code>ros_cancel_request</code> message:</li>
+<li></li>
+<li>
+<ul>
+<li>If the goal ID is zero and timestamp is zero, cancel all goals.</li>
+</ul>
+</li>
+<li>
+<ul>
+<li>If the goal ID is zero and timestamp is not zero, cancel all goals accepted</li>
+</ul>
+</li>
+<li>at or before the timestamp.</li>
+<li>
+<ul>
+<li>If the goal ID is not zero and timestamp is zero, cancel the goal with the</li>
+</ul>
+</li>
+<li>given ID regardless of the time it was accepted.</li>
+<li>
+<ul>
+<li>If the goal ID is not zero and timestamp is not zero, cancel the goal with the</li>
+</ul>
+</li>
+<li>given ID and all goals accepted at or before the timestamp.</li>
+<li></li>
+<li><hr>
+</li>
+<li>Attribute          | Adherence</li>
+<li>—————— | ———––</li>
+<li>Allocates Memory   | No</li>
+<li>Thread-Safe        | No</li>
+<li>Uses Atomics       | No</li>
+<li>Lock-Free          | Yes</li>
+<li></li>
+<li>\param[in] action_client handle to the client that will make the cancel request</li>
+<li>\param[in] ros_cancel_request pointer the ROS cancel request message</li>
+<li>\param[out] sequence_number pointer to the cancel request sequence number</li>
+<li>\return <code>RCL_RET_OK</code> if the response was taken successfully, or</li>
+<li>\return <code>RCL_RET_INVALID_ARGUMENT</code> if any arguments are invalid, or</li>
+<li>\return <code>RCL_RET_ACTION_CLIENT_INVALID</code> if the action client is invalid, or</li>
+<li>\return <code>RCL_RET_ERROR</code> if an unspecified error occurs.
+*/</li>
+</ul>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="actions" data-search-js="../search-index.js"></div>
+    <script src="../main.js"></script></body></html>

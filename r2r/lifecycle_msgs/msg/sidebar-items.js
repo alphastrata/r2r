@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["State",""],["Transition",""],["TransitionDescription",""],["TransitionEvent",""]]});

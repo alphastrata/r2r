@@ -1,0 +1,85 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Accept a new goal using an action server. **"><meta name="keywords" content="rust, rustlang, rust-lang, rcl_action_accept_new_goal"><title>actions::rcl_action_accept_new_goal - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings"></script><script src="../storage.js"></script><script src="../crates.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc fn"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../actions/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class="location"><a href="index.html">actions</a></p><div id="sidebar-vars" data-name="rcl_action_accept_new_goal" data-ty="fn" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Function <a href="index.html">actions</a>::<wbr><a class="fn" href="">rcl_action_accept_new_goal</a></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/actions/Users/martin/r2r/r2r/target/debug/build/actions-08b31eb10feca840/out/action_bindings.rs.html#1775-1778" title="goto source code">[src]</a></span></h1><pre class="rust fn">pub unsafe extern &quot;C&quot; fn rcl_action_accept_new_goal(<br>&nbsp;&nbsp;&nbsp;&nbsp;action_server: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../actions/struct.rcl_action_server_t.html" title="struct actions::rcl_action_server_t">rcl_action_server_t</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;goal_info: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*const </a><a class="type" href="../actions/type.rcl_action_goal_info_t.html" title="type actions::rcl_action_goal_info_t">rcl_action_goal_info_t</a><br>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.pointer.html">*mut </a><a class="struct" href="../actions/struct.rcl_action_goal_handle_t.html" title="struct actions::rcl_action_goal_handle_t">rcl_action_goal_handle_t</a></pre><div class="docblock"><p>Accept a new goal using an action server.
+**</p>
+<ul>
+<li>This is a non-blocking call.</li>
+<li></li>
+<li>Creates and returns a new goal handle.</li>
+<li>The action server starts tracking it internally.</li>
+<li>If a failure occurs, <code>NULL</code> is returned and an error message is set.</li>
+<li>Possible reasons for failure:</li>
+<li>
+<ul>
+<li>action server is invalid</li>
+</ul>
+</li>
+<li>
+<ul>
+<li>goal info is invalid</li>
+</ul>
+</li>
+<li>
+<ul>
+<li>goal ID is already being tracked by the action server</li>
+</ul>
+</li>
+<li>
+<ul>
+<li>memory allocation failure</li>
+</ul>
+</li>
+<li></li>
+<li>This function should be called after receiving a new goal request with</li>
+<li>rcl_action_take_goal_request() and before sending a response with</li>
+<li>rcl_action_send_goal_response().</li>
+<li></li>
+<li>After calling this function, the action server will start tracking the goal.</li>
+<li>The pointer to the goal handle becomes invalid after <code>rcl_action_server_fini()</code> is called.</li>
+<li>The caller becomes responsible for finalizing the goal handle later.</li>
+<li></li>
+<li>Example usage:</li>
+<li></li>
+<li>
+<pre><code class="language-c"></code></pre>
+</li>
+<li>#include &lt;rcl/rcl_action.h&gt;</li>
+<li></li>
+<li>// … init an action server</li>
+<li>// Take a goal request (client library type)</li>
+<li>rcl_ret_t ret = rcl_action_take_goal_request(&amp;action_server, &amp;goal_request);</li>
+<li>// … error handling</li>
+<li>// If the goal is accepted, then tell the action server</li>
+<li>// First, create a goal info message</li>
+<li>rcl_action_goal_info_t goal_info = rcl_action_get_zero_initialized_goal_info();</li>
+<li>// … populate goal_info.uuid (unique_identifier_msgs/UUID)</li>
+<li>// … populate goal_info.stamp (builtin_interfaces/Time)</li>
+<li>rcl_action_goal_handle_t * goal_handle = rcl_action_accept_new_goal(&amp;action_server, &amp;goal_info);</li>
+<li>// … error_handling</li>
+<li>// … Populate goal response (client library type)</li>
+<li>ret = rcl_action_send_goal_response(&amp;action_server, &amp;goal_response);</li>
+<li>// … error handling, and sometime before shutdown finalize goal info message</li>
+<li>ret = rcl_action_goal_info_fini(&amp;goal_info, &amp;action_server);</li>
+<li>
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+</pre></div>
+</li>
+<li></li>
+<li><hr>
+</li>
+<li>Attribute          | Adherence</li>
+<li>—————— | ———––</li>
+<li>Allocates Memory   | Yes</li>
+<li>Thread-Safe        | No</li>
+<li>Uses Atomics       | No</li>
+<li>Lock-Free          | Yes</li>
+<li></li>
+<li>\param[in] action_server handle to the action server that is accepting the goal</li>
+<li>\param[in] goal_info a message containing info about the goal being accepted</li>
+<li>\return a pointer to a new goal handle representing the accepted goal, or</li>
+<li>\return <code>NULL</code> if a failure occured.
+*/</li>
+</ul>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="actions" data-search-js="../search-index.js"></div>
+    <script src="../main.js"></script></body></html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="A wide string FFI module for converting to and from wide string variants."><meta name="keywords" content="rust, rustlang, rust-lang, widestring"><title>widestring - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings"></script><script src="../storage.js"></script><script src="../crates.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="alternate icon" type="image/png" href="../favicon-16x16.png">
+<link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../widestring/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><p class="location">Crate widestring</p><div class="block version"><p>Version 0.4.3</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all widestring's items</p></a><div class="block items"><ul><li><a href="#structs">Structs</a></li><li><a href="#traits">Traits</a></li><li><a href="#types">Type Definitions</a></li></ul></div><p class="location"></p><div id="sidebar-vars" data-name="widestring" data-ty="mod" data-relpath="../"></div></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu"><img src="../brush.svg" width="18" height="18" alt="Pick another theme!"></button><div id="theme-choices" role="menu"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" class="help-button">?</button>
+                <a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" height="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Crate <a class="mod" href="">widestring</a></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/widestring/lib.rs.html#1-238" title="goto source code">[src]</a></span></h1><div class="docblock"><p>A wide string FFI module for converting to and from wide string variants.</p>
+<p>This module provides multiple types of wide strings: <code>U16String</code>, <code>U16CString</code>, <code>U32String</code>,
+and <code>U32CString</code>. These types are backed by two generic implementations parameterized by
+element size: <code>UString&lt;C&gt;</code> and <code>UCString&lt;C&gt;</code>. The <code>UCString</code> types are analogous to the
+standard <code>CString</code> FFI type, while the <code>UString</code> types are analogous to <code>OsString</code>. Otherwise,
+<code>U16</code> and <code>U32</code> types differ only in character width and encoding methods.</p>
+<p>For <code>U16String</code> and <code>U32String</code>, no guarantees are made about the underlying string data; they
+are simply a sequence of UTF-16 <em>code units</em> or UTF-32 code points, both of which may be
+ill-formed or contain nul values. <code>U16CString</code> and <code>U32CString</code>, on the other hand, are aware
+of nul values and are guaranteed to be terminated with a nul value (unless unchecked methods
+are used to construct the strings). Because <code>U16CString</code> and <code>U32CString</code> are C-style,
+nul-terminated strings, they will have no interior nul values. All four string types may still
+have unpaired UTF-16 surrogates or invalid UTF-32 code points; ill-formed data is preserved
+until conversion to a basic Rust <code>String</code>.</p>
+<p>Use <code>U16String</code> or <code>U32String</code> when you simply need to pass-through strings, or when you know
+or don’t care if you’re not dealing with a nul-terminated string, such as when string lengths
+are provided and you are only reading strings from FFI, not writing them out to a FFI.</p>
+<p>Use <code>U16CString</code> or <code>U32CString</code> when you must properly handle nul values, and must deal with
+nul-terminated C-style wide strings, such as when you pass strings into FFI functions.</p>
+<h1 id="relationship-to-other-rust-strings" class="section-header"><a href="#relationship-to-other-rust-strings">Relationship to other Rust Strings</a></h1>
+<p>Standard Rust strings <code>String</code> and <code>str</code> are well-formed Unicode data encoded as UTF-8. The
+standard strings provide proper handling of Unicode and ensure strong safety guarantees.</p>
+<p><code>CString</code> and <code>CStr</code> are strings used for C FFI. They handle nul-terminated C-style strings.
+However, they do not have a builtin encoding, and conversions between C-style and other Rust
+strings must specifically encode and decode the strings, and handle possibly invalid encoding
+data. They are safe to use only in passing string-like data back and forth from C APIs but do
+not provide any other guarantees, so may not be well-formed.</p>
+<p><code>OsString</code> and <code>OsStr</code> are also strings for use with FFI. Unlike <code>CString</code>, they do no special
+handling of nul values, but instead have an OS-specified encoding. While, for example, on Linux
+systems this is usually the UTF-8 encoding, this is not the case for every platform. The
+encoding may not even be 8-bit: on Windows, <code>OsString</code> uses a malformed encoding sometimes
+referred to as “WTF-8”. In any case, like <code>CString</code>, <code>OsString</code> has no additional guarantees
+and may not be well-formed.</p>
+<p>Due to the loss of safety of these other string types, conversion to standard Rust <code>String</code> is
+lossy, and may require knowledge of the underlying encoding, including platform-specific
+quirks.</p>
+<p>The wide strings in this crate are roughly based on the principles of the string types in
+<code>std::ffi</code>, though there are differences. <code>U16String</code>, <code>U32String</code>, <code>U16Str</code>, and <code>U32Str</code> are
+roughly similar in role to <code>OsString</code> and <code>OsStr</code>, while <code>U16CString</code>, <code>U32CString</code>, <code>U16CStr</code>,
+and <code>U32CStr</code> are roughly similar in role to <code>CString</code> and <code>CStr</code>. Conversion to FFI string
+types is generally very straight forward and safe, while conversion directly between standard
+Rust <code>String</code> is a lossy conversion just as <code>OsString</code> is.</p>
+<p><code>U16String</code> and <code>U16CString</code> are treated as though they use UTF-16 encoding, even if they may
+contain unpaired surrogates. <code>U32String</code> and <code>U32CString</code> are treated as though they use UTF-32
+encoding, even if they may contain values outside the valid Unicode character range.</p>
+<h1 id="remarks-on-utf-16-code-units" class="section-header"><a href="#remarks-on-utf-16-code-units">Remarks on UTF-16 Code Units</a></h1>
+<p><em>Code units</em> are the 16-bit units that comprise UTF-16 sequences. Code units
+can specify Unicode code points either as single units or in <em>surrogate pairs</em>. Because every
+code unit might be part of a surrogate pair, many regular string operations, including
+indexing into a wide string, writing to a wide string, or even iterating a wide string should
+be handled with care and are greatly discouraged. Some operations have safer alternatives
+provided, such as Unicode code point iteration instead of code unit iteration. Always keep in
+mind that the number of code units (<code>len()</code>) of a wide string is <strong>not</strong> equivalent to the
+number of Unicode characters in the string, merely the length of the UTF-16 encoding sequence.
+In fact, Unicode code points do not even have a one-to-one mapping with characters!</p>
+<p>UTF-32 simply encodes Unicode code points as-is in 32-bit values, but Unicode character code
+points are reserved only for 21-bits. Again, Unicode code points do not have a one-to-one
+mapping with the concept of a visual character glyph.</p>
+<h1 id="ffi-with-cc-wchar_t" class="section-header"><a href="#ffi-with-cc-wchar_t">FFI with C/C++ <code>wchar_t</code></a></h1>
+<p>C/C++’s <code>wchar_t</code> (and C++’s corresponding <code>widestring</code>) varies in size depending on compiler
+and platform. Typically, <code>wchar_t</code> is 16-bits on Windows and 32-bits on most Unix-based
+platforms. For convenience when using <code>wchar_t</code>-based FFI’s, type aliases for the corresponding
+string types are provided: <code>WideString</code> aliases <code>U16String</code> on Windows or <code>U32String</code>
+elsewhere, <code>WideCString</code> aliases <code>U16CString</code> or <code>U32CString</code>, etc. The <code>WideChar</code> alias
+is also provided, aliasing <code>u16</code> or <code>u32</code>.</p>
+<p>When not interacting with a FFI using <code>wchar_t</code>, it is recommended to use the string types
+directly rather than via the wide alias.</p>
+<p>This crate supports <code>no_std</code> when default features are disabled. The <code>std</code> and <code>alloc</code> features
+(enabled by default) enable the <code>U16String</code>, <code>U32String</code>, <code>U16CString</code>, and <code>U32CString</code> types
+and aliases. Other types do not require allocation and can be used in a <code>no_std</code> environment.</p>
+<h1 id="examples" class="section-header"><a href="#examples">Examples</a></h1>
+<p>The following example uses <code>U16String</code> to get Windows error messages, since <code>FormatMessageW</code>
+returns a string length for us and we don’t need to pass error messages into other FFI
+functions so we don’t need to worry about nul values.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">winapi</span>::<span class="ident">um</span>::<span class="ident">winbase</span>::{<span class="ident">FormatMessageW</span>, <span class="ident">LocalFree</span>, <span class="ident">FORMAT_MESSAGE_FROM_SYSTEM</span>,
+                          <span class="ident">FORMAT_MESSAGE_ALLOCATE_BUFFER</span>, <span class="ident">FORMAT_MESSAGE_IGNORE_INSERTS</span>};
+<span class="kw">use</span> <span class="ident">winapi</span>::<span class="ident">shared</span>::<span class="ident">ntdef</span>::<span class="ident">LPWSTR</span>;
+<span class="kw">use</span> <span class="ident">winapi</span>::<span class="ident">shared</span>::<span class="ident">minwindef</span>::<span class="ident">HLOCAL</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
+<span class="kw">use</span> <span class="ident">widestring</span>::<span class="ident">U16String</span>;
+
+<span class="kw">let</span> <span class="ident">U16Str</span>: <span class="ident">U16String</span>;
+<span class="kw">unsafe</span> {
+    <span class="comment">// First, get a string buffer from some windows api such as FormatMessageW...</span>
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span>: <span class="ident">LPWSTR</span> <span class="op">=</span> <span class="ident">ptr</span>::<span class="ident">null_mut</span>();
+    <span class="kw">let</span> <span class="ident">strlen</span> <span class="op">=</span> <span class="ident">FormatMessageW</span>(<span class="ident">FORMAT_MESSAGE_FROM_SYSTEM</span> <span class="op">|</span>
+                                <span class="ident">FORMAT_MESSAGE_ALLOCATE_BUFFER</span> <span class="op">|</span>
+                                <span class="ident">FORMAT_MESSAGE_IGNORE_INSERTS</span>,
+                                <span class="ident">ptr</span>::<span class="ident">null</span>(),
+                                <span class="ident">error_code</span>, <span class="comment">// error code from GetLastError()</span>
+                                <span class="number">0</span>,
+                                (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">LPWSTR</span>) <span class="kw">as</span> <span class="ident">LPWSTR</span>,
+                                <span class="number">0</span>,
+                                <span class="ident">ptr</span>::<span class="ident">null_mut</span>());
+
+    <span class="comment">// Get the buffer as a wide string</span>
+    <span class="ident">U16Str</span> <span class="op">=</span> <span class="ident">U16String</span>::<span class="ident">from_ptr</span>(<span class="ident">buffer</span>, <span class="ident">strlen</span> <span class="kw">as</span> <span class="ident">usize</span>);
+    <span class="comment">// Since U16String creates an owned copy, it&#39;s safe to free original buffer now</span>
+    <span class="comment">// If you didn&#39;t want an owned copy, you could use &amp;U16Str.</span>
+    <span class="ident">LocalFree</span>(<span class="ident">buffer</span> <span class="kw">as</span> <span class="ident">HLOCAL</span>);
+}
+<span class="comment">// Convert to a regular Rust String and use it to your heart&#39;s desire!</span>
+<span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">U16Str</span>.<span class="ident">to_string_lossy</span>();</pre></div>
+<p>The following example is the functionally the same, only using <code>U16CString</code> instead.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">winapi</span>::<span class="ident">um</span>::<span class="ident">winbase</span>::{<span class="ident">FormatMessageW</span>, <span class="ident">LocalFree</span>, <span class="ident">FORMAT_MESSAGE_FROM_SYSTEM</span>,
+                          <span class="ident">FORMAT_MESSAGE_ALLOCATE_BUFFER</span>, <span class="ident">FORMAT_MESSAGE_IGNORE_INSERTS</span>};
+<span class="kw">use</span> <span class="ident">winapi</span>::<span class="ident">shared</span>::<span class="ident">ntdef</span>::<span class="ident">LPWSTR</span>;
+<span class="kw">use</span> <span class="ident">winapi</span>::<span class="ident">shared</span>::<span class="ident">minwindef</span>::<span class="ident">HLOCAL</span>;
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">ptr</span>;
+<span class="kw">use</span> <span class="ident">widestring</span>::<span class="ident">U16CString</span>;
+
+<span class="kw">let</span> <span class="ident">U16Str</span>: <span class="ident">U16CString</span>;
+<span class="kw">unsafe</span> {
+    <span class="comment">// First, get a string buffer from some windows api such as FormatMessageW...</span>
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span>: <span class="ident">LPWSTR</span> <span class="op">=</span> <span class="ident">ptr</span>::<span class="ident">null_mut</span>();
+    <span class="ident">FormatMessageW</span>(<span class="ident">FORMAT_MESSAGE_FROM_SYSTEM</span> <span class="op">|</span>
+                   <span class="ident">FORMAT_MESSAGE_ALLOCATE_BUFFER</span> <span class="op">|</span>
+                   <span class="ident">FORMAT_MESSAGE_IGNORE_INSERTS</span>,
+                   <span class="ident">ptr</span>::<span class="ident">null</span>(),
+                   <span class="ident">error_code</span>, <span class="comment">// error code from GetLastError()</span>
+                   <span class="number">0</span>,
+                   (<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw-2">mut</span> <span class="ident">LPWSTR</span>) <span class="kw">as</span> <span class="ident">LPWSTR</span>,
+                   <span class="number">0</span>,
+                   <span class="ident">ptr</span>::<span class="ident">null_mut</span>());
+
+    <span class="comment">// Get the buffer as a wide string</span>
+    <span class="ident">U16Str</span> <span class="op">=</span> <span class="ident">U16CString</span>::<span class="ident">from_ptr_str</span>(<span class="ident">buffer</span>);
+    <span class="comment">// Since U16CString creates an owned copy, it&#39;s safe to free original buffer now</span>
+    <span class="comment">// If you didn&#39;t want an owned copy, you could use &amp;U16CStr.</span>
+    <span class="ident">LocalFree</span>(<span class="ident">buffer</span> <span class="kw">as</span> <span class="ident">HLOCAL</span>);
+}
+<span class="comment">// Convert to a regular Rust String and use it to your heart&#39;s desire!</span>
+<span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">U16Str</span>.<span class="ident">to_string_lossy</span>();</pre></div>
+</div><h2 id="structs" class="section-header"><a href="#structs">Structs</a></h2>
+<table><tr class="module-item"><td><a class="struct" href="struct.FromUtf32Error.html" title="widestring::FromUtf32Error struct">FromUtf32Error</a></td><td class="docblock-short"><p>A possible error value when converting a String from a UTF-32 byte slice.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.MissingNulError.html" title="widestring::MissingNulError struct">MissingNulError</a></td><td class="docblock-short"><p>An error returned from <code>UCString</code> and <code>UCStr</code> to indicate that a terminating nul value
+was missing.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.NulError.html" title="widestring::NulError struct">NulError</a></td><td class="docblock-short"><p>An error returned from <code>UCString</code> to indicate that an invalid nul value was found.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.UCStr.html" title="widestring::UCStr struct">UCStr</a></td><td class="docblock-short"><p>C-style wide string reference for <code>UCString</code>.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.UCString.html" title="widestring::UCString struct">UCString</a></td><td class="docblock-short"><p>An owned, mutable C-style “wide” string for FFI that is nul-aware and nul-terminated.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.UStr.html" title="widestring::UStr struct">UStr</a></td><td class="docblock-short"><p>String slice reference for <code>U16String</code>.</p>
+</td></tr><tr class="module-item"><td><a class="struct" href="struct.UString.html" title="widestring::UString struct">UString</a></td><td class="docblock-short"><p>An owned, mutable “wide” string for FFI that is <strong>not</strong> nul-aware.</p>
+</td></tr></table><h2 id="traits" class="section-header"><a href="#traits">Traits</a></h2>
+<table><tr class="module-item"><td><a class="trait" href="trait.UChar.html" title="widestring::UChar trait">UChar</a></td><td class="docblock-short"><p>Marker trait for primitive types used to represent UTF character data. Should not be used
+directly.</p>
+</td></tr></table><h2 id="types" class="section-header"><a href="#types">Type Definitions</a></h2>
+<table><tr class="module-item"><td><a class="type" href="type.U16CStr.html" title="widestring::U16CStr type">U16CStr</a></td><td class="docblock-short"><p>C-style wide string reference for <code>U16CString</code>.</p>
+</td></tr><tr class="module-item"><td><a class="type" href="type.U16CString.html" title="widestring::U16CString type">U16CString</a></td><td class="docblock-short"><p>An owned, mutable C-style “wide” string for FFI that is nul-aware and nul-terminated.</p>
+</td></tr><tr class="module-item"><td><a class="type" href="type.U16Str.html" title="widestring::U16Str type">U16Str</a></td><td class="docblock-short"><p>String slice reference for <code>U16String</code>.</p>
+</td></tr><tr class="module-item"><td><a class="type" href="type.U16String.html" title="widestring::U16String type">U16String</a></td><td class="docblock-short"><p>An owned, mutable “wide” string for FFI that is <strong>not</strong> nul-aware.</p>
+</td></tr><tr class="module-item"><td><a class="type" href="type.U32CStr.html" title="widestring::U32CStr type">U32CStr</a></td><td class="docblock-short"><p>C-style wide string reference for <code>U32CString</code>.</p>
+</td></tr><tr class="module-item"><td><a class="type" href="type.U32CString.html" title="widestring::U32CString type">U32CString</a></td><td class="docblock-short"><p>An owned, mutable C-style wide string for FFI that is nul-aware and nul-terminated.</p>
+</td></tr><tr class="module-item"><td><a class="type" href="type.U32Str.html" title="widestring::U32Str type">U32Str</a></td><td class="docblock-short"><p>String slice reference for <code>U32String</code>.</p>
+</td></tr><tr class="module-item"><td><a class="type" href="type.U32String.html" title="widestring::U32String type">U32String</a></td><td class="docblock-short"><p>An owned, mutable 32-bit wide string for FFI that is <strong>not</strong> nul-aware.</p>
+</td></tr><tr class="module-item"><td><a class="type" href="type.WideCStr.html" title="widestring::WideCStr type">WideCStr</a></td><td class="docblock-short"><p>Alias for <code>U16CStr</code> or <code>U32CStr</code> depending on platform. Intended to match typical C <code>wchar_t</code> size on platform.</p>
+</td></tr><tr class="module-item"><td><a class="type" href="type.WideCString.html" title="widestring::WideCString type">WideCString</a></td><td class="docblock-short"><p>Alias for <code>U16String</code> or <code>U32String</code> depending on platform. Intended to match typical C <code>wchar_t</code> size on platform.</p>
+</td></tr><tr class="module-item"><td><a class="type" href="type.WideChar.html" title="widestring::WideChar type">WideChar</a></td><td class="docblock-short"><p>Alias for <code>u16</code> or <code>u32</code> depending on platform. Intended to match typical C <code>wchar_t</code> size on platform.</p>
+</td></tr><tr class="module-item"><td><a class="type" href="type.WideStr.html" title="widestring::WideStr type">WideStr</a></td><td class="docblock-short"><p>Alias for <code>U16Str</code> or <code>U32Str</code> depending on platform. Intended to match typical C <code>wchar_t</code> size on platform.</p>
+</td></tr><tr class="module-item"><td><a class="type" href="type.WideString.html" title="widestring::WideString type">WideString</a></td><td class="docblock-short"><p>Alias for <code>U16String</code> or <code>U32String</code> depending on platform. Intended to match typical C <code>wchar_t</code> size on platform.</p>
+</td></tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="widestring" data-search-js="../search-index.js"></div>
+    <script src="../main.js"></script></body></html>
